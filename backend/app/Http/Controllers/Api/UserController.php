@@ -18,12 +18,6 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::select('id', 'name', 'email', 'role', 'created_at')->orderBy('id')->get();
-        return response()->json($users);
-    }
-
-    public function showall()
-    {
         $users = User::all(); // Changed variable name to plural for clarity
 
         if ($users->isEmpty()) {
@@ -32,6 +26,7 @@ class UserController extends Controller
 
         return response()->json(['message' => 'User list retrieved successfully', 'data' => $users]);
     }
+
 
     /**
      * Store a newly created resource in storage.

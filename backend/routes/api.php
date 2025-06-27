@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,15 +28,15 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::get('/users', [UserController::class, 'showall']);
-    Route::get('/user/{id}', [UserController::class, 'show']);
-    Route::post('/user', [UserController::class, 'store']);
-    Route::put('/user/{id}', [UserController::class, 'update']);
-    Route::delete('/user/{id}', [UserController::class, 'destroy']);
-    Route::get('/users/with-trashed', [UserController::class, 'showAllWithTrashed']);
-    Route::get('/users/only-trashed', [UserController::class, 'showOnlyTrashed']);
-    Route::put('/user/{id}/restore', [UserController::class, 'restore']);
-    Route::delete('/user/{id}/force-delete', [UserController::class, 'forceDelete']);
+    Route::apiResource('users', UserController::class);
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/with-trashed', [UserController::class, 'showAllWithTrashed'])->name('with-trashed');
+        Route::get('/only-trashed', [UserController::class, 'showOnlyTrashed'])->name('only-trashed');
+        Route::put('/{user}/restore', [UserController::class, 'restore'])->name('restore');
+        Route::delete('/{user}/force-delete', [UserController::class, 'forceDelete'])->name('force-delete');
+    });
 
 
+    Route::post('/produt', [ProductController::class, 'store']);
 });
+    
