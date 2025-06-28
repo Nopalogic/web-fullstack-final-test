@@ -40,7 +40,7 @@ class UserController extends Controller
 
         $user = User::create([
             'name'     => $validated['name'],
-            'email'    => $validated['email'],
+            'username'    => $validated['username'],
             'role'     => $validated['role'],
             'password' => Hash::make($validated['password']),
         ]);
@@ -57,7 +57,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $user = User::select('id', 'name', 'email', 'role', 'created_at')->find($id);
+        $user = User::select('id', 'name', 'username', 'role', 'created_at')->find($id);
         if (!$user) {
             return response()->json(['message' => 'User tidak ditemukan'], 404);
         }
@@ -83,9 +83,9 @@ class UserController extends Controller
 
         $validated = $request->validate([
             'name'     => 'required|string|max:255',
-            'email'    => [
+            'username'    => [
                 'required',
-                'email',
+                'username',
                 Rule::unique('users')->ignore($user->id),
             ],
             'role' => 'nullable|string|max:10',
@@ -93,7 +93,7 @@ class UserController extends Controller
         ]);
 
         $user->name = $validated['name'];
-        $user->email = $validated['email'];
+        $user->username = $validated['username'];
         $user->role = $validated['role'];
 
         if (!empty($validated['password'])) {

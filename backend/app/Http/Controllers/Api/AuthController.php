@@ -13,18 +13,18 @@ class AuthController extends Controller
     {
         // Validasi input
         $validated = $request->validate([
-            'email' => 'required|email',
+            'username' => 'required',
             'password' => 'required|min:6',
         ]);
 
-        // Mencari pengguna berdasarkan email
-        $user = User::where('email', $request->email)->first();
+        // Mencari pengguna berdasarkan username
+        $user = User::where('username', $request->username)->first();
 
         // Jika pengguna tidak ditemukan atau password salah
         if (! $user || ! Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Email atau password salah'
+                'message' => 'Username atau password salah'
             ], 401);
         }
 
