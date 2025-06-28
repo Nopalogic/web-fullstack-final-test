@@ -23,7 +23,7 @@ export const verifyToken = async () => {
 
 export const logoutUser = async () => {
   try {
-    const response = await api.delete("/logout");
+    const response = await api.post("/logout");
     return response.data;
   } catch (error) {
     handleApiError(error);
