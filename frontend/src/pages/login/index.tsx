@@ -50,7 +50,12 @@ export default function LoginPage() {
 
       toast({ title: "Login successful!" });
       login(response.token, response.data);
-      navigate("/");
+
+      if (response.data.role === "admin") {
+        return navigate("/dashboard");
+      }
+
+      return navigate("/");
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast({
