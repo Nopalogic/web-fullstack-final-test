@@ -97,4 +97,35 @@ class ProductController extends Controller
 
         return response()->json(['message' => 'Produk berhasil dihapus.'], 200);
     }
+
+    public function showOnlyTrashed()
+    {
+        $trashedProducts = Product::onlyTrashed()->latest()->paginate(10);
+
+        return response()->json(['data' => $trashedProducts]);
+    }
+
+    /**
+     * @OA\Put(
+     * path="/products/{id}/restore",
+     * summary="Mengembalikan produk dari sampah.",
+     * @OA\Response(response="200", description="Success")
+     * )
+     */
+    public function restore($id)
+    {
+        // Cari produk HANYA di dalam data yang sudah di-soft delete
+        $product = Product::onlyTrashed()->find($id);
+
+        if (!$product) {
+            return response()->json(['message' => 'Produk tidak ditemukan di dalam sampah.'], 404);
+        }
+
+        $product->restore();
+
+        return response()->json([
+            'message' => 'Produk berhasil dikembalikan.',
+            'data' => $product
+        ], 200);
+    }
 }

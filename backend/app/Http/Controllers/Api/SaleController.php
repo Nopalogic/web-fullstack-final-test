@@ -53,7 +53,7 @@ class SaleController extends Controller
                     if ($product->stock < $item['quantity']) {
                         throw new \Exception('Stok produk "' . $product->name . '" tidak mencukupi.');
                     }
-                    
+
                     $subtotal = $product->price * $item['quantity'];
                     $totalAmount += $subtotal;
                     $sale->details()->create([
@@ -73,7 +73,6 @@ class SaleController extends Controller
                 'message' => 'Transaksi berhasil disimpan.',
                 'data' => $sale
             ], 201);
-
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Gagal menyimpan transaksi.',
@@ -113,5 +112,57 @@ class SaleController extends Controller
         });
 
         return response()->json(['message' => 'Transaksi berhasil dibatalkan dan stok dikembalikan.'], 200);
+    }
+
+    public function showOnlyTrashed()
+    {
+        $trashedSales = Sale::onlyTrashed()->with('user', 'details.product')->latest()->paginate(10);
+
+        return response()->json(['data' => $trashedSales]);
+    }
+
+    /**
+     * @OA\Put(
+     * path="/sales/{id}/restore",
+     * summary="Mengembalikan (mengaktifkan kembali) transaksi penjualan yang dibatalkan.",
+     * @OA\Response(response="200", description="Success")
+     * )
+     */
+    public function restore($id)
+    {
+        $sale = Sale::onlyTrashed()->find($id);
+
+        if (!$sale) {
+            return response()->json(['message' => 'Transaksi penjualan tidak ditemukan di dalam sampah.'], 404);
+        }
+
+        try {
+            // Gunakan transaction untuk memastikan semua proses berhasil
+            DB::transaction(function () use ($sale) {
+                // Kurangi kembali stok untuk setiap item dalam transaksi yang di-restore
+                foreach ($sale->details as $detail) {
+                    $product = Product::find($detail->product_id);
+                    if (!$product || $product->stock < $detail->quantity) {
+                        throw new \Exception('Stok produk "' . ($product->name ?? 'N/A') . '" tidak mencukupi untuk me-restore transaksi.');
+                    }
+                    $product->decrement('stock', $detail->quantity);
+                }
+
+                // Kembalikan data penjualannya
+                $sale->restore();
+            });
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Gagal me-restore transaksi.',
+                'error' => $e->getMessage()
+            ], 422);
+        }
+
+        $sale->load('user', 'details.product'); // Muat kembali relasi untuk response
+
+        return response()->json([
+            'message' => 'Transaksi penjualan berhasil dikembalikan dan stok telah disesuaikan.',
+            'data' => $sale
+        ], 200);
     }
 }
