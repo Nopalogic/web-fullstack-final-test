@@ -24,7 +24,11 @@ class UserController extends Controller
             return response()->json(['message' => 'Tidak ada user yang terdaftar'], 404); // Using 404 Not Found for no resources
         }
 
-        return response()->json(['message' => 'User list retrieved successfully', 'data' => $users]);
+        return response()->json([
+            'success' => true,
+            'message' => 'User list retrieved successfully',
+            'data' => $users
+        ]);
     }
 
 
@@ -45,7 +49,11 @@ class UserController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        return response()->json(['message' => 'User berhasil dibuat', 'data' => $user], 201);
+        return response()->json([
+            'success' => true,
+            'message' => 'User berhasil dibuat',
+            'data' => $user
+        ], 201);
     }
 
 
@@ -62,6 +70,7 @@ class UserController extends Controller
             return response()->json(['message' => 'User tidak ditemukan'], 404);
         }
         return response()->json([
+            'success' => true,
             'message' => 'User details retrieved successfully',
             'data' => $user
         ]);
@@ -102,7 +111,10 @@ class UserController extends Controller
 
         $user->save();
 
-        return response()->json(['message' => 'User updated successfully', 'data' => $user]);
+        return response()->json([
+            'success' => true,
+            'message' => 'User updated successfully',
+            'data' => $user]);
     }
 
     /**
@@ -120,7 +132,9 @@ class UserController extends Controller
 
         $user->delete();
 
-        return response()->json(['message' => 'User removed successfully']);
+        return response()->json([
+            'success' => true,
+            'message' => 'User removed successfully']);
     }
 
     public function restore($id)
@@ -135,7 +149,10 @@ class UserController extends Controller
         // Memulihkan user
         $user->restore(); // Mengatur `deleted_at` kembali ke NULL
 
-        return response()->json(['message' => 'User berhasil dipulihkan'], 200);
+        return response()->json([
+            'success' => true,
+            'message' => 'User berhasil dipulihkan'
+        ], 200);
     }
 
     /**
@@ -153,7 +170,10 @@ class UserController extends Controller
         // Menghapus user secara permanen dari database
         $user->forceDelete();
 
-        return response()->json(['message' => 'User berhasil dihapus permanen'], 200);
+        return response()->json([
+            'success' => true,
+            'message' => 'User berhasil dihapus permanen'
+        ], 200);
     }
 
     /**
@@ -167,7 +187,10 @@ class UserController extends Controller
             return response()->json(['message' => 'Tidak ada user terdaftar (termasuk yang dihapus)'], 404);
         }
 
-        return response()->json(['message' => 'Daftar user (termasuk yang dihapus) berhasil diambil', 'data' => $users]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Daftar user (termasuk yang dihapus) berhasil diambil',
+            'data' => $users]);
     }
 
     /**
@@ -181,6 +204,9 @@ class UserController extends Controller
             return response()->json(['message' => 'Tidak ada user yang di-soft delete'], 404);
         }
 
-        return response()->json(['message' => 'Daftar user yang di-soft delete berhasil diambil', 'data' => $users]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Daftar user yang di-soft delete berhasil diambil',
+            'data' => $users]);
     }
 }

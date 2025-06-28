@@ -19,7 +19,11 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::latest()->paginate(10);
-        return response()->json(['data' => $products]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Products list retrieved successfully',
+            'data' => $products
+        ]);
     }
 
     /**
@@ -42,6 +46,7 @@ class ProductController extends Controller
         $product = Product::create($validated);
 
         return response()->json([
+            'success' => true,
             'message' => 'Produk berhasil ditambahkan.',
             'data' => $product
         ], 201); // 201 Created
@@ -79,7 +84,8 @@ class ProductController extends Controller
         $product->update($validated);
 
         return response()->json([
-            'message' => 'Produk berhasil diperbarui.',
+            'success' => true,
+            'message' => 'Product updated successfully',
             'data' => $product
         ], 200); // 200 OK
     }
@@ -95,14 +101,20 @@ class ProductController extends Controller
     {
         $product->delete(); // Melakukan soft delete
 
-        return response()->json(['message' => 'Produk berhasil dihapus.'], 200);
+        return response()->json([
+            'success' => true,
+            'message' => 'Produk berhasil dihapus.'
+        ], 200);
     }
 
     public function showOnlyTrashed()
     {
         $trashedProducts = Product::onlyTrashed()->latest()->paginate(10);
 
-        return response()->json(['data' => $trashedProducts]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Products trashed retrieved successfully',
+            'data' => $trashedProducts]);
     }
 
     /**
@@ -118,12 +130,15 @@ class ProductController extends Controller
         $product = Product::onlyTrashed()->find($id);
 
         if (!$product) {
-            return response()->json(['message' => 'Produk tidak ditemukan di dalam sampah.'], 404);
+            return response()->json([
+                'message' => 'Produk tidak ditemukan di dalam sampah.'
+            ], 404);
         }
 
         $product->restore();
 
         return response()->json([
+            'success' => true,
             'message' => 'Produk berhasil dikembalikan.',
             'data' => $product
         ], 200);

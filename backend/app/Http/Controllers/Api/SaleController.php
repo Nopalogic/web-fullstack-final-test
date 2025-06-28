@@ -21,7 +21,11 @@ class SaleController extends Controller
     public function index()
     {
         $sales = Sale::with('user', 'details.product')->latest()->paginate(10);
-        return response()->json(['data' => $sales]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Sales detail retrieved successfully',
+            'data' => $sales
+        ]);
     }
 
     /**
@@ -70,6 +74,7 @@ class SaleController extends Controller
 
             $sale->load('user', 'details.product');
             return response()->json([
+                'success' => true,
                 'message' => 'Transaksi berhasil disimpan.',
                 'data' => $sale
             ], 201);
@@ -91,7 +96,11 @@ class SaleController extends Controller
     public function show(Sale $sale)
     {
         $sale->load('user', 'details.product');
-        return response()->json(['data' => $sale]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Sales detail retrieved successfully',
+            'data' => $sale
+        ]);
     }
 
     /**
@@ -111,14 +120,20 @@ class SaleController extends Controller
             $sale->delete(); // Soft delete transaksi
         });
 
-        return response()->json(['message' => 'Transaksi berhasil dibatalkan dan stok dikembalikan.'], 200);
+        return response()->json([
+            'success' => true,
+            'message' => 'Transaksi berhasil dibatalkan dan stok dikembalikan.'
+        ], 200);
     }
 
     public function showOnlyTrashed()
     {
         $trashedSales = Sale::onlyTrashed()->with('user', 'details.product')->latest()->paginate(10);
 
-        return response()->json(['data' => $trashedSales]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Products trashed retrieved successfully',
+            'data' => $trashedSales]);
     }
 
     /**
@@ -161,6 +176,7 @@ class SaleController extends Controller
         $sale->load('user', 'details.product'); // Muat kembali relasi untuk response
 
         return response()->json([
+            'success' => true,
             'message' => 'Transaksi penjualan berhasil dikembalikan dan stok telah disesuaikan.',
             'data' => $sale
         ], 200);
