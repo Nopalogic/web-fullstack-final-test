@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -39,10 +40,16 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'price' => 'required|integer|min:0',
             'stock' => 'required|integer|min:0',
-            // 'image' => 'nullable|image' // Validasi gambar bisa ditambahkan jika perlu
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public');
+            $validated['image'] = $path;
+        }
+
         $validated['creator_id'] = Auth::id();
+        $validated['editor_id'] = Auth::id();
         $product = Product::create($validated);
 
         return response()->json([
@@ -62,7 +69,11 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         // Route-Model Binding otomatis menangani 404 Not Found jika produk tidak ada
-        return response()->json(['data' => $product]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Product details retrieved successfully.',
+            'data' => $product
+        ]);
     }
 
     /**
@@ -78,7 +89,18 @@ class ProductController extends Controller
             'name' => 'sometimes|required|string|max:255',
             'price' => 'sometimes|required|integer|min:0',
             'stock' => 'sometimes|required|integer|min:0',
+            'image' => 'sometimes|image|mimes:jpeg,png,jpg|max:2048'
         ]);
+
+        if ($request->hasFile('image')) {
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+
+            $path = $request->file('image')->store('products', 'public');
+            $validated['image'] = $path;
+        }
+
 
         $validated['editor_id'] = Auth::id();
         $product->update($validated);
@@ -114,7 +136,8 @@ class ProductController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Products trashed retrieved successfully',
-            'data' => $trashedProducts]);
+            'data' => $trashedProducts
+        ]);
     }
 
     /**
