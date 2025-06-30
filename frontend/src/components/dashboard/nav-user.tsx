@@ -38,7 +38,7 @@ export default function NavUser({
 
       if (!response.success) throw new Error("Logout failed");
       logout();
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       console.log(error);
     }
