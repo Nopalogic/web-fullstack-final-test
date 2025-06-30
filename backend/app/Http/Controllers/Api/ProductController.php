@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -39,8 +40,14 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'price' => 'required|integer|min:0',
             'stock' => 'required|integer|min:0',
-            // 'image' => 'nullable|image' // Validasi gambar bisa ditambahkan jika perlu
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048' // Validasi lebih spesifik
         ]);
+
+        // Handle File Upload
+        if ($request->hasFile('image')) {
+            // Simpan gambar di folder 'public/products' dan simpan path-nya
+            $validated['image'] = $request->file('image')->store('products', 'public');
+        }
 
         $validated['creator_id'] = Auth::id();
         $product = Product::create($validated);
@@ -49,7 +56,7 @@ class ProductController extends Controller
             'success' => true,
             'message' => 'Produk berhasil ditambahkan.',
             'data' => $product
-        ], 201); // 201 Created
+        ], 201);
     }
 
     /**
@@ -72,22 +79,43 @@ class ProductController extends Controller
      * @OA\Response(response="200", description="Success")
      * )
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $id)
     {
+
+        $product = Product::findOrFail($id);
+
         $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'price' => 'sometimes|required|integer|min:0',
-            'stock' => 'sometimes|required|integer|min:0',
+            'name' => 'string|max:255',
+            'price' => 'integer|min:0',
+            'stock' => 'integer|min:0',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        $validated['editor_id'] = Auth::id();
-        $product->update($validated);
+        if ($request->has('name')) {
+            $product->name = $validated['name'];
+        }
+        if ($request->has('price')) {
+            $product->price = $validated['price'];
+        }
+        if ($request->has('stock')) {
+            $product->stock = $validated['stock'];
+        }
+
+        if ($request->hasFile('image')) {
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+            $product->image = $request->file('image')->store('products', 'public');
+        }
+
+        $product->editor_id = Auth::id();
+        $product->save(); 
 
         return response()->json([
             'success' => true,
             'message' => 'Product updated successfully',
             'data' => $product
-        ], 200); // 200 OK
+        ], 200);
     }
 
     /**
@@ -114,7 +142,8 @@ class ProductController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Products trashed retrieved successfully',
-            'data' => $trashedProducts]);
+            'data' => $trashedProducts
+        ]);
     }
 
     /**
