@@ -5,7 +5,7 @@ export const loginUser = async (data: {
   password: string;
 }) => {
   try {
-    const response = await api.post("/login", data);
+    const response = await api.post("/api/login", data);
     return response.data;
   } catch (error) {
     handleApiError(error);
@@ -14,7 +14,7 @@ export const loginUser = async (data: {
 
 export const verifyToken = async () => {
   try {
-    const response = await api.get("/verify-token");
+    const response = await api.get("/api/verify-token");
     return response.data;
   } catch (error) {
     handleApiError(error);
@@ -23,7 +23,7 @@ export const verifyToken = async () => {
 
 export const logoutUser = async () => {
   try {
-    const response = await api.post("/logout");
+    const response = await api.post("/api/logout");
     return response.data;
   } catch (error) {
     handleApiError(error);
