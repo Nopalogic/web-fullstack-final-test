@@ -38,7 +38,7 @@ export default function NavUser({
 
       if (!response.success) throw new Error("Logout failed");
       logout();
-      navigate("/login"); 
+      navigate("/login");
     } catch (error) {
       console.log(error);
     }
@@ -53,7 +53,10 @@ export default function NavUser({
               size='lg'
               className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
             >
-              <div className='flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground' />
+              <img
+                src='/user-placeholder.png'
+                className='flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground'
+              />
               <div className='grid flex-1 text-left text-sm leading-tight'>
                 <span className='line-clamp-1 truncate font-semibold'>
                   {name}

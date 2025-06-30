@@ -5,6 +5,7 @@ import { ProtectedRoute } from "@/components/shared/protected-route";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
 import { cn } from "@/lib/utils";
+import { Header } from "@/components/dashboard/header";
 
 export default function DashboardLayout() {
   return (
@@ -23,7 +24,7 @@ export default function DashboardLayout() {
             "group-data-[scroll-locked=1]/body:has-[main.fixed-main]:h-svh"
           )}
         >
-          {/* <Header fixed /> */}
+          <Header />
           <Outlet />
         </div>
       </SidebarProvider>

@@ -33,7 +33,7 @@ export const sidebarData: SidebarData = {
         {
           title: "Staff",
           icon: Users,
-          url: "/dashboard/settings",
+          url: "/dashboard/users",
         },
         {
           title: "Settings",
