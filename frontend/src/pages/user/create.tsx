@@ -61,11 +61,15 @@ export default function UserCreate() {
     <Main>
       <form className='p-6 md:p-8' onSubmit={handleSubmit(onSubmit)}>
         <div className='flex flex-col gap-6'>
-          <div className='flex flex-col items-center text-center'>
-            <h1 className='text-2xl font-bold'>Welcome</h1>
-            <p className='text-balance text-muted-foreground'>
-              Login to your Jua Bareh account
-            </p>
+          <div className='flex justify-between'>
+            <h1 className='text-2xl font-bold'>Add Staff</h1>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={() => navigate(-1)}
+            >
+              Back
+            </Button>
           </div>
           <div className='grid gap-2'>
             <Label htmlFor='name'>Name</Label>
