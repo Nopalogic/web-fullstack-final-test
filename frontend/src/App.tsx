@@ -9,6 +9,7 @@ import { POSView } from "./pages/pos";
 import ProductPage from "./pages/product";
 import ProductCreate from "./pages/product/create";
 import ProductShow from "./pages/product/show";
+import SalesPage from "./pages/sale";
 import UserPage from "./pages/user";
 import UserCreate from "./pages/user/create";
 import UserShow from "./pages/user/show";
@@ -28,6 +29,8 @@ function App() {
         <Route path='/dashboard/products' element={<ProductPage />} />
         <Route path='/dashboard/products/create' element={<ProductCreate />} />
         <Route path='/dashboard/products/:id' element={<ProductShow />} />
+
+        <Route path='/dashboard/sales' element={<SalesPage />} />
       </Route>
 
       <Route element={<CashierLayout />}>
