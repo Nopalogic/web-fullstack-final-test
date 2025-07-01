@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router";
 
 import CashierLayout from "./layouts/cashier";
 import DashboardLayout from "./layouts/dashboard";
+import Dashboard from "./pages/dashboard";
 import LoginPage from "./pages/login";
 import NotFound from "./pages/not-found";
 import { POSView } from "./pages/pos";
@@ -18,7 +19,7 @@ function App() {
       <Route path='/' element={<LoginPage />} />
 
       <Route element={<DashboardLayout />}>
-        <Route path='/dashboard' element={<div>Hello Admin</div>} />
+        <Route path='/dashboard' element={<Dashboard />} />
 
         <Route path='/dashboard/users' element={<UserPage />} />
         <Route path='/dashboard/users/create' element={<UserCreate />} />
