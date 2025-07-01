@@ -1,8 +1,10 @@
 import { Route, Routes } from "react-router";
 
+import CashierLayout from "./layouts/cashier";
 import DashboardLayout from "./layouts/dashboard";
 import LoginPage from "./pages/login";
 import NotFound from "./pages/not-found";
+import { POSView } from "./pages/pos";
 import ProductPage from "./pages/product";
 import ProductCreate from "./pages/product/create";
 import ProductShow from "./pages/product/show";
@@ -25,6 +27,10 @@ function App() {
         <Route path='/dashboard/products' element={<ProductPage />} />
         <Route path='/dashboard/products/create' element={<ProductCreate />} />
         <Route path='/dashboard/products/:id' element={<ProductShow />} />
+      </Route>
+
+      <Route element={<CashierLayout />}>
+        <Route path='/cashier' element={<POSView />} />
       </Route>
 
       <Route path='*' element={<NotFound />} />

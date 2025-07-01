@@ -1,5 +1,5 @@
 export interface Product {
-  id?: number;
+  id?: number | string;
   creator_id?: number;
   editor_id?: number;
   image: File | string;
