@@ -40,16 +40,11 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'price' => 'required|integer|min:0',
             'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048' // Validasi lebih spesifik
+            // 'image' => 'nullable|image' // Validasi gambar bisa ditambahkan jika perlu
         ]);
 
-        // Handle File Upload
-        if ($request->hasFile('image')) {
-            // Simpan gambar di folder 'public/products' dan simpan path-nya
-            $validated['image'] = $request->file('image')->store('products', 'public');
-        }
-
         $validated['creator_id'] = Auth::id();
+        $validated['editor_id'] = Auth::id();
         $product = Product::create($validated);
 
         return response()->json([
@@ -69,7 +64,11 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         // Route-Model Binding otomatis menangani 404 Not Found jika produk tidak ada
-        return response()->json(['data' => $product]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Product details retrieved successfully.',
+            'data' => $product
+        ]);
     }
 
     /**
@@ -85,31 +84,13 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'string|max:255',
-            'price' => 'integer|min:0',
-            'stock' => 'integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'name' => 'sometimes|required|string|max:255',
+            'price' => 'sometimes|required|integer|min:0',
+            'stock' => 'sometimes|required|integer|min:0',
         ]);
 
-        if ($request->has('name')) {
-            $product->name = $validated['name'];
-        }
-        if ($request->has('price')) {
-            $product->price = $validated['price'];
-        }
-        if ($request->has('stock')) {
-            $product->stock = $validated['stock'];
-        }
-
-        if ($request->hasFile('image')) {
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
-            }
-            $product->image = $request->file('image')->store('products', 'public');
-        }
-
-        $product->editor_id = Auth::id();
-        $product->save(); 
+        $validated['editor_id'] = Auth::id();
+        $product->update($validated);
 
         return response()->json([
             'success' => true,

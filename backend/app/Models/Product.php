@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
@@ -35,6 +36,42 @@ class Product extends Model
         'price' => 'integer',
         'stock' => 'integer',
     ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['image_url'];
+
+    /**
+     * Secara otomatis menghapus file gambar saat model dihapus.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($product) {
+            // Cek jika ada path gambar sebelum menghapus
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+        });
+    }
+
+    /**
+     * Accessor untuk mendapatkan URL lengkap dari gambar.
+     * Atribut ini akan menjadi 'image_url' di response JSON.
+     *
+     * @return string|null
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        if ($this->image) {
+            return Storage::url($this->image);
+        }
+        return null;
+    }
 
     /**
      * Mendapatkan detail penjualan yang terkait dengan produk ini.
