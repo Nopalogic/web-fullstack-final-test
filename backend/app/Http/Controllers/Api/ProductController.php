@@ -22,7 +22,7 @@ class ProductController extends Controller
         $products = Product::latest()->paginate(10);
         return response()->json([
             'success' => true,
-            'message' => 'Products list retrieved successfully',
+            'message' => 'Product details retrieved successfully',
             'data' => $products
         ]);
     }
@@ -68,8 +68,11 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        // Route-Model Binding otomatis menangani 404 Not Found jika produk tidak ada
-        return response()->json(['data' => $product]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Products list retrieved successfully',
+            'data' => $product
+        ]);
     }
 
     /**
