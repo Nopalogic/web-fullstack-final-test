@@ -43,16 +43,15 @@ export default function UserCreate() {
     try {
       const response = await createUser(data);
 
-      if (!response.success) throw new Error("Login failed");
+      if (!response.success) throw new Error("Add staff failed");
 
-      toast({ title: "Login successful!" });
+      toast({ title: "Add staff successful!" });
       navigate(-1);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Login failed",
-        description: "Please check your credentials and try again",
+        title: "Add staff failed",
       });
     }
   };

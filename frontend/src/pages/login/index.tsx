@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
@@ -26,6 +26,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuthStore();
   const { login } = useAuthStore();
   const {
     control,
@@ -38,6 +39,14 @@ export default function LoginPage() {
       password: "",
     },
   });
+
+  if (isAuthenticated) {
+    if (user?.role === "admin") {
+      return <Navigate to='/dashboard' />;
+    }
+
+    return <Navigate to='/cashier' />;
+  }
 
   const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
 
@@ -55,7 +64,7 @@ export default function LoginPage() {
         return navigate("/dashboard");
       }
 
-      return navigate("/");
+      return navigate("/cashier");
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast({
