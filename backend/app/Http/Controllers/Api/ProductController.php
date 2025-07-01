@@ -82,44 +82,49 @@ class ProductController extends Controller
      * @OA\Response(response="200", description="Success")
      * )
      */
-    public function update(Request $request, $id)
-    {
+    // app/Http/Controllers/Api/ProductController.php
 
-        $product = Product::findOrFail($id);
+public function update(Request $request, $id)
+{
+    $product = Product::findOrFail($id);
 
-        $validated = $request->validate([
-            'name' => 'string|max:255',
-            'price' => 'integer|min:0',
-            'stock' => 'integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+    // Langkah 1: Validasi HANYA data yang bukan file.
+    // 'sometimes' berarti validasi hanya berjalan jika field tersebut ada di request.
+    $validated = $request->validate([
+        'name' => 'sometimes|required|string|max:255',
+        'price' => 'sometimes|required|integer|min:0',
+        'stock' => 'sometimes|required|integer|min:0',
+    ]);
+
+    // Langkah 2: Update produk dengan data yang sudah divalidasi.
+    $product->update($validated);
+
+    // Langkah 3: Handle gambar HANYA jika file baru diunggah.
+    if ($request->hasFile('image')) {
+        // Validasi khusus untuk file gambar
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        if ($request->has('name')) {
-            $product->name = $validated['name'];
-        }
-        if ($request->has('price')) {
-            $product->price = $validated['price'];
-        }
-        if ($request->has('stock')) {
-            $product->stock = $validated['stock'];
+        // Hapus gambar lama jika ada
+        if ($product->image) {
+            Storage::disk('public')->delete($product->image);
         }
 
-        if ($request->hasFile('image')) {
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
-            }
-            $product->image = $request->file('image')->store('products', 'public');
-        }
-
-        $product->editor_id = Auth::id();
-        $product->save(); 
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Product updated successfully',
-            'data' => $product
-        ], 200);
+        // Simpan gambar baru dan update path di model
+        $product->image = $request->file('image')->store('products', 'public');
     }
+
+    // Langkah 4: Set editor dan simpan semua perubahan.
+    $product->editor_id = Auth::id();
+    $product->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Product updated successfully',
+        'data' => $product
+    ], 200);
+}
 
     /**
      * @OA\Delete(
