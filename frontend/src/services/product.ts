@@ -30,7 +30,7 @@ export const getProduct = async (id: number | string) => {
 
 export const updateProduct = async (id: number | string, data: any) => {
   try {
-    const response = await api.put(`/api/products/${id}`, data);
+    const response = await api.post(`/api/products/${id}`, data);
     return response.data;
   } catch (error) {
     handleApiError(error);
