@@ -112,73 +112,7 @@ class SaleController extends Controller
      */
     public function destroy(Sale $sale)
     {
-        // Logika pembatalan/refund yang benar harusnya mengembalikan stok produk
-        DB::transaction(function () use ($sale) {
-            foreach ($sale->details as $detail) {
-                Product::find($detail->product_id)->increment('stock', $detail->quantity);
-            }
-            $sale->delete(); // Soft delete transaksi
-        });
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Transaksi berhasil dibatalkan dan stok dikembalikan.'
-        ], 200);
+        
     }
-
-    public function showOnlyTrashed()
-    {
-        $trashedSales = Sale::onlyTrashed()->with('user', 'details.product')->latest()->paginate(10);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Products trashed retrieved successfully',
-            'data' => $trashedSales]);
-    }
-
-    /**
-     * @OA\Put(
-     * path="/sales/{id}/restore",
-     * summary="Mengembalikan (mengaktifkan kembali) transaksi penjualan yang dibatalkan.",
-     * @OA\Response(response="200", description="Success")
-     * )
-     */
-    public function restore($id)
-    {
-        $sale = Sale::onlyTrashed()->find($id);
-
-        if (!$sale) {
-            return response()->json(['message' => 'Transaksi penjualan tidak ditemukan di dalam sampah.'], 404);
-        }
-
-        try {
-            // Gunakan transaction untuk memastikan semua proses berhasil
-            DB::transaction(function () use ($sale) {
-                // Kurangi kembali stok untuk setiap item dalam transaksi yang di-restore
-                foreach ($sale->details as $detail) {
-                    $product = Product::find($detail->product_id);
-                    if (!$product || $product->stock < $detail->quantity) {
-                        throw new \Exception('Stok produk "' . ($product->name ?? 'N/A') . '" tidak mencukupi untuk me-restore transaksi.');
-                    }
-                    $product->decrement('stock', $detail->quantity);
-                }
-
-                // Kembalikan data penjualannya
-                $sale->restore();
-            });
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Gagal me-restore transaksi.',
-                'error' => $e->getMessage()
-            ], 422);
-        }
-
-        $sale->load('user', 'details.product'); // Muat kembali relasi untuk response
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Transaksi penjualan berhasil dikembalikan dan stok telah disesuaikan.',
-            'data' => $sale
-        ], 200);
-    }
+       
 }

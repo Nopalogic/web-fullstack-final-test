@@ -46,9 +46,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
   
     Route::apiResource('sales', SaleController::class);
-    Route::prefix('sales')->name('sales.')->group(function () {
-        Route::get('/only-trashed', [SaleController::class, 'showOnlyTrashed'])->name('only-trashed');
-        Route::put('/{sale}/restore', [SaleController::class, 'restore'])->name('restore');
-    });
 });
     
